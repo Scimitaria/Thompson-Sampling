@@ -8,22 +8,32 @@ d = len(conversionRates) # number of slot machines
 # Making arrays to count our losses and wins
 nPosReward = np.zeros(d) # number of wins
 nNegReward = np.zeros(d) # number of losses
+timesSelected = np.zeros(d)
 
 for i in range(N):
   selected = 0
   maxRandom = 0
 
-  #np.random.beta(nPosReward[j] + 1, nNegReward[j] + 1)
-  for j in range(0,5): # range (0,5) is the same as range(5)
+  for j in range(0,d):
+    #random draw from beta distribution
     randomBeta = np.random.beta(nPosReward[j] + 1, nNegReward[j] + 1)
     if (randomBeta > maxRandom):
       maxRandom = randomBeta
-      selected = j
-      #return selected
-    if np.random.rand() < conversionRates[selected]:
-      nPosReward[selected] += 1
-    else:
-      nNegReward[selected] += 1
-    print(selected)
-    print(nPosReward[selected])
-    print(nNegReward[selected])
+      selected = j #best machine
+      timesSelected[selected]+=1
+      #if we won
+      if np.random.rand() < conversionRates[selected]: nPosReward[selected] += 1
+      #if we lost
+      else: nNegReward[selected] += 1
+
+maxP=0
+for m in range(0,d):
+  pos=nPosReward[m]
+  neg=nNegReward[m]
+  best=1
+  p=pos/neg
+  if(p>maxP):
+    maxP=p
+    best=m+1
+  print("machine number "+str(m+1)+" was selected "+str(timesSelected[m])+" times ("+str(pos)+" wins, "+str(neg)+" losses, P="+str(p)+")")
+print("Conclusion: the best machine is machine number "+str(best))
